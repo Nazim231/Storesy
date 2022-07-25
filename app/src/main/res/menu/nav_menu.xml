@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_home"
+            android:title="Home"
+            tools:ignore="HardcodedText" />
+
+        <item
+            android:id="@+id/nav_cart"
+            android:title="My Cart"
+            tools:ignore="HardcodedText" />
+
+        <item
+            android:id="@+id/nav_wishlist"
+            android:title="My Wishlist"
+            tools:ignore="HardcodedText" />
+
+        <item
+            android:id="@+id/nav_orders"
+            android:title="My Orders"
+            tools:ignore="HardcodedText" />
+
+        <item
+            android:id="@+id/nav_account"
+            android:title="My Account"
+            tools:ignore="HardcodedText" />
+    </group>
+
+</menu>
