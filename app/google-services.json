@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "302277345809",
+    "project_id": "storesy-1cb64",
+    "storage_bucket": "storesy-1cb64.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302277345809:android:a791a026cae17e967567b0",
+        "android_client_info": {
+          "package_name": "com.naztec.storesy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302277345809-r4hba39sd3a3hbfa8nf7fpkrdjea8n2q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.naztec.storesy",
+            "certificate_hash": "b675a15e4257733eb9221c801a28943c5362b869"
+          }
+        },
+        {
+          "client_id": "302277345809-ocrn1h0g0fi3jj1lad81e0ct2kei1bve.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwLQ3nR1-PYbQ35D_cwu5iX-BetgUDwCo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302277345809-ocrn1h0g0fi3jj1lad81e0ct2kei1bve.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
