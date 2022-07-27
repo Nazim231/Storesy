@@ -1,11 +1,11 @@
 package com.naztec.storesy;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.naztec.storesy.Custom.UserAuthentications;
 
@@ -18,16 +18,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         // Performing Authentication
-        UserAuthentications.performAuth(this);
+       UserAuthentications.performAuth(this);
 
-        new Handler().postDelayed(() -> {
-            Intent intent;
-            if (UserAuthentications.userData.isAuthenticated())
-                intent = new Intent(this, MainActivity.class);
-            else
-                intent = new Intent(this, UserRegistrationActivity.class);
-            startActivity(intent);
-            this.finish();
-        }, 2000);
     }
 }

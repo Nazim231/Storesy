@@ -2,16 +2,14 @@ package com.naztec.storesy.Fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.naztec.storesy.Custom.UserAuthentications;
@@ -23,8 +21,7 @@ public class SignInFragment extends Fragment {
 
     ImageButton btnSignInAsGuest;
     TextInputEditText txtEmail, txtPwd;
-    Button btnSignIn;
-    TextView btnForgotPassword, switchToSignUpFrag;
+    Button btnForgotPassword, btnSignIn, switchToSignUpFrag;
 
     public SignInFragment() {
         // Required empty public constructor
@@ -41,8 +38,8 @@ public class SignInFragment extends Fragment {
         txtEmail = view.findViewById(R.id.sign_in_email);
         txtPwd = view.findViewById(R.id.sign_in_pwd);
         btnSignIn = view.findViewById(R.id.btn_sign_in);
-        btnForgotPassword = view.findViewById(R.id.sign_in_txt_btn_forgot_password);
-        switchToSignUpFrag = view.findViewById(R.id.txt_btn_sign_up_frag);
+        btnForgotPassword = view.findViewById(R.id.sign_in_btn_forgot_password);
+        switchToSignUpFrag = view.findViewById(R.id.btn_goto_sign_up_frag);
 
         btnSignIn.setOnClickListener(v -> {
             String email = Objects.requireNonNull(txtEmail.getText()).toString();
@@ -62,6 +59,12 @@ public class SignInFragment extends Fragment {
 
         btnSignInAsGuest.setOnClickListener(v ->
                 UserAuthentications.signInAsGuest(view.getContext())
+        );
+
+        btnForgotPassword.setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction().replace(R.id.registration_frame_layout,
+                                new ForgotPasswordFragment())
+                        .commit()
         );
 
         switchToSignUpFrag.setOnClickListener(v ->

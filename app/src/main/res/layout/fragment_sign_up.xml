@@ -23,10 +23,10 @@
         android:id="@+id/sign_up_form_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="16dp"
         android:clipChildren="false"
         android:clipToPadding="false"
+        android:orientation="vertical"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -37,15 +37,15 @@
             android:fontFamily="@font/poppins"
             android:text="@string/sign_up"
             android:textAppearance="@style/TextAppearance.AppCompat.Display2"
-            android:textColor="#D1D1D1"
+            android:textColor="@color/heading"
             tools:ignore="TextContrastCheck" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:orientation="horizontal"
-            android:weightSum="2"
-            android:baselineAligned="false">
+            android:weightSum="2">
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -181,16 +181,17 @@
             android:text="Already have an Account?"
             tools:ignore="HardcodedText" />
 
-        <TextView
-            android:id="@+id/txt_btn_sign_in_frag"
+        <Button
+            android:id="@+id/btn_goto_sign_in_frag"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="@font/poppins"
             android:gravity="center"
-            android:padding="8dp"
             android:text="@string/sign_in"
+            android:textAllCaps="false"
             android:textColor="@color/purple_700" />
 
 
