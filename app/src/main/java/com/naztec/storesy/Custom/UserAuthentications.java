@@ -5,13 +5,17 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.Source;
 import com.naztec.storesy.MainActivity;
+import com.naztec.storesy.Models.UserProfileModel;
 import com.naztec.storesy.UserRegistrationActivity;
 
 import java.util.HashMap;
@@ -21,47 +25,35 @@ public class UserAuthentications {
 
     /**
      * User Information
-     */
-    // Values interpreted from signUp(), clearUserInfo()
-    public static String userFirstName = "";
-    public static String userLastName = "";
-    // Value interpreted from signInAsGuest(), signUp(), clearUserInfo()
-    public static String UID = "";
-
-    /**
-     * To check if the user the user is logged in or not
      *
-     * @implSpec if user isn't Signed In then False else True
-     * @implNote Value interpreted from performAuth(), signInAsGuest(), signUp()
+     * @implNote Data interpreted from signUp(), signInAsGuest(), signIn(),
+     * clearUserInfo(), fetchUserProfileData(), performAuth()
+     * @implSpec String{firstName, lastName, email, UID}, boolean{isAuthenticated, isVerified}
      */
-    public static boolean isAuthenticated = false;
-    /**
-     * To check if the user is logged in as Guest or not
-     *
-     * @implSpec if user is Signed In using Email & Password then True else False
-     * @implNote Value interpreted from performAuth(), signInAsGuest(), signUp()
-     */
-    public static boolean isVerified = false;
+    public static UserProfileModel userData = new UserProfileModel();
 
 
     /**
      * To check user logged in or not and is Guest or EmailVerified
      *
-     * @implNote Invoked from SplashActivity
+     * @implNote Invoked from SplashActivity, signIn()
      */
-    public static void performAuth() {
+    public static void performAuth(Context context) {
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            isAuthenticated = true;
-            // User is Guest or Email Verified
-            isVerified = currentUser.isEmailVerified();
-            if (isVerified) fetchUserProfileData();
-        } else {
-            isAuthenticated = false;
-            isVerified = false;
-        }
 
+        if (currentUser != null) {
+            if (!currentUser.isAnonymous()) {
+                // User is Signed In with Email
+                fetchUserProfileData(context);
+            } else {
+                // User is Guest
+                userData = new UserProfileModel(currentUser.getUid(), true);
+            }
+        } else {
+            // No Account Signed In
+            clearUserInfo();
+        }
     }
 
     /**
@@ -69,8 +61,24 @@ public class UserAuthentications {
      *
      * @implNote Invoked from performAuth()
      */
-    public static void fetchUserProfileData() {
+    public static void fetchUserProfileData(Context context) {
         // TODO : Fetch User Details like UID, Email Address, Delivery Addresses, Orders, Ratings, Wishlist, Cart, etc.
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        assert currentUser != null;
+        userData = new UserProfileModel(currentUser.getUid(), currentUser.getEmail(), true, true);
+
+        // Fetching User Details from DB
+        db.collection("USERS").document(userData.getUID()).get(Source.SERVER)
+                .addOnSuccessListener(documentSnapshot -> {
+                    userData.setFirstName(documentSnapshot.getString("firstName"));
+                    userData.setLastName(documentSnapshot.getString("lastName"));
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("PROFILE_DATA_FAILURE:", e.getMessage());
+                    Toast.makeText(context, "Error : PROFILE_DATA_FAILURE", Toast.LENGTH_SHORT).show();
+                });
+
     }
 
     /**
@@ -91,15 +99,14 @@ public class UserAuthentications {
         fAuth.signInAnonymously()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        isAuthenticated = true;
                         assert fAuth.getCurrentUser() != null;
-                        UID = fAuth.getCurrentUser().getUid();
+                        userData = new UserProfileModel(fAuth.getCurrentUser().getUid(), true);
                         pd.dismiss();
                         Intent intent = new Intent(context, MainActivity.class);
                         context.startActivity(intent);
                         ((Activity) context).finish();
                     } else {
-                        isAuthenticated = false;
+                        clearUserInfo();
                         pd.dismiss();
                         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                         builder.setTitle("Error")
@@ -136,28 +143,25 @@ public class UserAuthentications {
         pd.create();
         pd.show();
 
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        firebaseAuth.createUserWithEmailAndPassword(email, pwd)
+        fAuth.createUserWithEmailAndPassword(email, pwd)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Account Created
-                        isAuthenticated = true;
-                        isVerified = true;
-
+                        assert fAuth.getCurrentUser() != null;
+                        userData = new UserProfileModel(fAuth.getCurrentUser().getUid(), email, true, true);
                         // Adding User Info to Database
-                        assert firebaseAuth.getCurrentUser() != null;
-                        UID = firebaseAuth.getCurrentUser().getUid();
                         HashMap<Object, String> data = new HashMap<>();
                         data.put("firstName", firstName);
                         data.put("lastName", lastName);
-                        db.collection("USERS").document(UID).set(data, SetOptions.merge())
+                        db.collection("USERS").document(userData.getUID()).set(data, SetOptions.merge())
                                 .addOnCompleteListener(dataInsertion -> {
                                     if (dataInsertion.isSuccessful()) {
                                         // Profile Created
-                                        userFirstName = firstName;
-                                        userLastName = lastName;
+                                        userData.setFirstName(firstName);
+                                        userData.setLastName(lastName);
                                         pd.dismiss();
                                         context.startActivity(new Intent(context, MainActivity.class));
                                         ((Activity) context).finish();
@@ -177,8 +181,7 @@ public class UserAuthentications {
 
                     } else {
                         // Failed to Create Account
-                        isAuthenticated = false;
-                        isVerified = false;
+                        clearUserInfo();
                         pd.dismiss();
                         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                         builder.setTitle("Error")
@@ -196,6 +199,49 @@ public class UserAuthentications {
                 });
     }
 
+    /**
+     * Signing In User using Email & Password
+     *
+     * @param context to make the use of Context whenever needed
+     * @param email   Users' Email
+     * @param pwd     Users' Password
+     * @implNote Invoked from SignInFragment on btnSignIn
+     */
+    public static void signIn(Context context, String email, String pwd) {
+        ProgressDialog pd = new ProgressDialog(context);
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pd.setMessage("Signing In...");
+        pd.setCanceledOnTouchOutside(false);
+        pd.show();
+
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
+        fAuth.signInWithEmailAndPassword(email, pwd)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Signed In
+                        pd.dismiss();
+                        performAuth(context);  // To Fetch User Information
+
+                        context.startActivity(new Intent(context, MainActivity.class));
+                        ((Activity) context).finish();
+                    } else {
+                        pd.dismiss();
+                        String error = Objects.requireNonNull(task.getException()).getMessage();
+                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                        builder.setTitle("Sign In Failed")
+                                .setMessage(error)
+                                .setNegativeButton("Cancel", ((dialogInterface, i) -> {
+                                }))
+                                .setPositiveButton("Retry", ((dialogInterface, i) ->
+                                        signIn(context, email, pwd)
+                                ));
+                        Dialog dialog = builder.create();
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.show();
+                    }
+                });
+    }
+
     public static void signOut(Context context) {
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
         fAuth.signOut();
@@ -204,10 +250,9 @@ public class UserAuthentications {
         ((Activity) context).finish();
     }
 
+    // To clear whole User Information
     private static void clearUserInfo() {
-        UID = "";
-        userFirstName = "";
-        userLastName = "";
+        userData = new UserProfileModel();
 
     }
 

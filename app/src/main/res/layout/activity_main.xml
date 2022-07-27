@@ -31,7 +31,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
-        app:itemTextAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
+        app:itemTextAppearance="@style/Theme.Storesy.MenuItems"
+        app:itemTextColor="#555555"
         app:menu="@menu/nav_menu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

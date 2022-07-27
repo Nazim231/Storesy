@@ -18,11 +18,11 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         // Performing Authentication
-        UserAuthentications.performAuth();
+        UserAuthentications.performAuth(this);
 
         new Handler().postDelayed(() -> {
             Intent intent;
-            if (UserAuthentications.isAuthenticated)
+            if (UserAuthentications.userData.isAuthenticated())
                 intent = new Intent(this, MainActivity.class);
             else
                 intent = new Intent(this, UserRegistrationActivity.class);

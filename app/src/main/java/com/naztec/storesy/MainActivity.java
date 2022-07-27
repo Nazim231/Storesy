@@ -11,9 +11,12 @@ import androidx.fragment.app.Fragment;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.google.android.material.navigation.NavigationView;
+import com.naztec.storesy.Custom.UserAuthentications;
 import com.naztec.storesy.Fragments.*;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,6 +41,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navView.setNavigationItemSelectedListener(this);
+
+        // Setting Data to the Navigation Header View
+        View view = navView.getHeaderView(0);
+        TextView personName = view.findViewById(R.id.header_user_name);
+        personName.setText(UserAuthentications.userData.getFirstName());
+        TextView personEmail = view.findViewById(R.id.header_user_email);
+        personEmail.setText(UserAuthentications.userData.getEmail());
 
     }
 

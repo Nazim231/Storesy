@@ -1,11 +1,6 @@
 <resources>
     <string name="app_name">Storesy</string>
 
-    <!-- Navigation Strings -->
-    <string name="nav_open">Open</string>
-    <string name="nav_close">Close</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="email">Email</string>
     <string name="pwd">Password</string>
     <string name="sign_in">Sign In</string>
@@ -14,4 +9,8 @@
     <string name="last_name">Last Name</string>
     <string name="conf_pwd">Confirm Password</string>
     <string name="sign_out">Sign Out</string>
+
+    <!-- Navigation Strings -->
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
 </resources>

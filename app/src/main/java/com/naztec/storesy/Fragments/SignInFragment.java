@@ -5,19 +5,26 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.naztec.storesy.Custom.UserAuthentications;
 import com.naztec.storesy.R;
 
+import java.util.Objects;
+
 public class SignInFragment extends Fragment {
 
-    TextView switchToSignUpFrag;
     ImageButton btnSignInAsGuest;
+    TextInputEditText txtEmail, txtPwd;
+    Button btnSignIn;
+    TextView btnForgotPassword, switchToSignUpFrag;
 
     public SignInFragment() {
         // Required empty public constructor
@@ -31,7 +38,27 @@ public class SignInFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
 
         btnSignInAsGuest = view.findViewById(R.id.img_btn_sign_in_guest);
+        txtEmail = view.findViewById(R.id.sign_in_email);
+        txtPwd = view.findViewById(R.id.sign_in_pwd);
+        btnSignIn = view.findViewById(R.id.btn_sign_in);
+        btnForgotPassword = view.findViewById(R.id.sign_in_txt_btn_forgot_password);
         switchToSignUpFrag = view.findViewById(R.id.txt_btn_sign_up_frag);
+
+        btnSignIn.setOnClickListener(v -> {
+            String email = Objects.requireNonNull(txtEmail.getText()).toString();
+            String pwd = Objects.requireNonNull(txtPwd.getText()).toString();
+
+            if (email.isEmpty())
+                txtEmail.setError("Required");
+            else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
+                txtEmail.setError("Enter valid Email");
+            else if (pwd.isEmpty())
+                txtPwd.setError("Required");
+            else if (pwd.length() < 8)
+                txtPwd.setError("Password must contain at least 8 characters");
+            else
+                UserAuthentications.signIn(view.getContext(), email, pwd);
+        });
 
         btnSignInAsGuest.setOnClickListener(v ->
                 UserAuthentications.signInAsGuest(view.getContext())
