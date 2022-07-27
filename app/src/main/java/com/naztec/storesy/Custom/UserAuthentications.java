@@ -5,15 +5,19 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Source;
+import com.naztec.storesy.EmailVerificationActivity;
 import com.naztec.storesy.MainActivity;
 import com.naztec.storesy.Models.UserProfileModel;
 import com.naztec.storesy.UserRegistrationActivity;
@@ -26,7 +30,7 @@ public class UserAuthentications {
     /**
      * User Information
      *
-     * @implNote Data interpreted from signUp(), signInAsGuest(), signIn(),
+     * @implNote Data interpreted from signUp(), signInAsGuest(),
      * clearUserInfo(), fetchUserProfileData(), performAuth()
      * @implSpec String{firstName, lastName, email, UID}, boolean{isAuthenticated, isVerified}
      */
@@ -36,24 +40,35 @@ public class UserAuthentications {
     /**
      * To check user logged in or not and is Guest or EmailVerified
      *
-     * @implNote Invoked from SplashActivity, signIn()
+     * @implNote Invoked from SplashActivity
      */
     public static void performAuth(Context context) {
-
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (currentUser != null) {
-            if (!currentUser.isAnonymous()) {
-                // User is Signed In with Email
-                fetchUserProfileData(context);
+        new Handler().postDelayed(() -> {
+            if (currentUser != null) {
+                currentUser.reload();
+                if (!currentUser.isAnonymous()) {
+                    // User is Signed In with Email
+                    if (currentUser.isEmailVerified()) {
+                        fetchUserProfileData(context);
+                        context.startActivity(new Intent(context, MainActivity.class));
+                    } else {
+                        userData = new UserProfileModel(currentUser.getUid(), currentUser.getEmail(), true);
+                        context.startActivity(new Intent(context, EmailVerificationActivity.class));
+                    }
+                } else {
+                    // User is Guest
+                    userData = new UserProfileModel(currentUser.getUid(), true);
+                    context.startActivity(new Intent(context, MainActivity.class));
+                }
             } else {
-                // User is Guest
-                userData = new UserProfileModel(currentUser.getUid(), true);
+                // No Account Signed In
+                clearUserInfo();
+                context.startActivity(new Intent(context, UserRegistrationActivity.class));
             }
-        } else {
-            // No Account Signed In
-            clearUserInfo();
-        }
+
+            ((Activity) context).finish();
+        }, 2000);
     }
 
     /**
@@ -66,8 +81,8 @@ public class UserAuthentications {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         assert currentUser != null;
-        userData = new UserProfileModel(currentUser.getUid(), currentUser.getEmail(), true, true);
-
+        userData = new UserProfileModel(currentUser.getUid(), currentUser.getEmail(), true);
+        userData.setVerified(true);
         // Fetching User Details from DB
         db.collection("USERS").document(userData.getUID()).get(Source.SERVER)
                 .addOnSuccessListener(documentSnapshot -> {
@@ -125,18 +140,17 @@ public class UserAuthentications {
 
     /**
      * Creating User Account using Email & Password
-     * TODO : Add functionality to Verify the User Email using link or OTP
      *
-     * @param context   to make the use of Context whenever needed
+     * @param view      to make the use of Context whenever needed
      * @param firstName Users' First Name
      * @param lastName  Users' Last Name
      * @param email     Users' Email
      * @param pwd       Users' Password
      * @implNote Invoked from SignUpFragment on btnSignUp
      */
-    public static void signUp(Context context, String firstName, String lastName, String email, String pwd) {
+    public static void signUp(View view, String firstName, String lastName, String email, String pwd) {
 
-        ProgressDialog pd = new ProgressDialog(context);
+        ProgressDialog pd = new ProgressDialog(view.getContext());
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pd.setMessage("Creating User Account...");
         pd.setCanceledOnTouchOutside(false);
@@ -144,52 +158,30 @@ public class UserAuthentications {
         pd.show();
 
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         fAuth.createUserWithEmailAndPassword(email, pwd)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Account Created
+                        pd.dismiss();
+                        //Account Created
                         assert fAuth.getCurrentUser() != null;
-                        userData = new UserProfileModel(fAuth.getCurrentUser().getUid(), email, true, true);
-                        // Adding User Info to Database
-                        HashMap<Object, String> data = new HashMap<>();
-                        data.put("firstName", firstName);
-                        data.put("lastName", lastName);
-                        db.collection("USERS").document(userData.getUID()).set(data, SetOptions.merge())
-                                .addOnCompleteListener(dataInsertion -> {
-                                    if (dataInsertion.isSuccessful()) {
-                                        // Profile Created
-                                        userData.setFirstName(firstName);
-                                        userData.setLastName(lastName);
-                                        pd.dismiss();
-                                        context.startActivity(new Intent(context, MainActivity.class));
-                                        ((Activity) context).finish();
-                                    } else {
-                                        // Profile Creation Failed
-                                        pd.dismiss();
-                                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-                                        builder.setTitle("Profile Creation Failed")
-                                                .setMessage(Objects.requireNonNull(task.getException()).getMessage())
-                                                .setNegativeButton("OK", ((dialogInterface, i) -> {
-                                                }));
-                                        Dialog dialog = builder.create();
-                                        dialog.setCanceledOnTouchOutside(false);
-                                        dialog.show();
-                                    }
-                                });
-
+                        userData = new UserProfileModel(fAuth.getCurrentUser().getUid(), email, true);
+                        userData.setFirstName(firstName);
+                        userData.setLastName(lastName);
+                        // Verifying Email
+                        view.getContext().startActivity(new Intent(view.getContext(), EmailVerificationActivity.class));
+                        ((Activity) view.getContext()).finish();
                     } else {
                         // Failed to Create Account
                         clearUserInfo();
                         pd.dismiss();
-                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
                         builder.setTitle("Error")
                                 .setMessage(Objects.requireNonNull(task.getException()).getMessage())
                                 .setNegativeButton("Cancel", ((dialogInterface, i) -> {
                                 }))
                                 .setPositiveButton("Retry", ((dialogInterface, i) ->
-                                        signUp(context, firstName, lastName, email, pwd)
+                                        signUp(view, firstName, lastName, email, pwd)
                                 ));
                         Dialog dialog = builder.create();
                         dialog.setCanceledOnTouchOutside(false);
@@ -197,6 +189,93 @@ public class UserAuthentications {
 
                     }
                 });
+    }
+
+    /**
+     * To Verify Users' Entered Email
+     *
+     * @param view to make the use of View whenever needed
+     * @implNote Invoked from EmailVerificationActivity on btnSendVerificationEmail
+     */
+    public static void sendVerificationEmail(View view) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        assert currentUser != null;
+        currentUser.sendEmailVerification()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Snackbar.make(view, "Email Sent, Please check your Inbox",
+                                Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Snackbar.make(view, "An error occurred, please try again",
+                                Snackbar.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    /**
+     * Check if the Email is Verified or not
+     *
+     * @return boolean value
+     * @implSpec Invoked from EmailVerificationActivity via onResume()
+     */
+    public static boolean isEmailVerified() {
+        boolean verified = false;
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            currentUser.reload();
+            verified = currentUser.isEmailVerified();
+        }
+        return verified;
+    }
+
+    /**
+     * Interface to see if the Profile Data is Uploaded to Database or not
+     *
+     * @implSpec used in addProfileDataToDB()
+     */
+    public interface DataUploaded {
+        void isDataUploaded(boolean dataUploaded);
+    }
+
+    /**
+     * To Upload the User Profile Data to Database after Email Verification
+     *
+     * @param context      to make the use of Context whenever needed
+     * @param dataUploaded interface to check either data is uploaded or not
+     * @implSpec Invoked from EmailVerificationActivity via onResume() after Email Verified
+     */
+    public static void addProfileDataToDB(Context context, DataUploaded dataUploaded) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Data Map
+        HashMap<Object, String> data = new HashMap<>();
+        data.put("firstName", userData.getFirstName());
+        data.put("lastName", userData.getLastName());
+
+        /* TODO : Take User FirstName and LastName if account is not verified at the time of account
+                 creation
+        */
+        db.collection("USERS").document(userData.getUID()).set(data, SetOptions.merge())
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        dataUploaded.isDataUploaded(true);
+                    } else {
+                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+                        builder.setTitle("Profile Creation Failed");
+                        builder.setMessage(Objects.requireNonNull(task.getException()).getMessage());
+                        builder.setPositiveButton("Retry", ((dialogInterface, i) -> addProfileDataToDB(context, dataUploaded)));
+                        builder.setNegativeButton("Cancel", ((dialogInterface, i) -> {
+                            context.startActivity(new Intent(context, MainActivity.class));
+                            ((Activity) context).finish();
+                        }));
+
+                        Dialog dialog = builder.create();
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.show();
+                    }
+                });
+
+
     }
 
     /**
@@ -219,10 +298,17 @@ public class UserAuthentications {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Signed In
+                        assert fAuth.getCurrentUser() != null;
+                        fAuth.getCurrentUser().reload();
                         pd.dismiss();
-                        performAuth(context);  // To Fetch User Information
-
-                        context.startActivity(new Intent(context, MainActivity.class));
+                        // Checking if User Email is Verified or Not
+                        if (fAuth.getCurrentUser().isEmailVerified()) {
+                            fetchUserProfileData(context);
+                            context.startActivity(new Intent(context, MainActivity.class));
+                        } else {
+                            // If User Email isn't Verified he must verify email before continuing
+                            context.startActivity(new Intent(context, EmailVerificationActivity.class));
+                        }
                         ((Activity) context).finish();
                     } else {
                         pd.dismiss();
@@ -242,6 +328,33 @@ public class UserAuthentications {
                 });
     }
 
+    /**
+     * To Reset User Password
+     *
+     * @param view  to make the use of View whenever needed
+     * @param email User Email whose password needs to be changed
+     * @implSpec Invoked from ForgotPasswordFragment on btnRecoverPassword
+     */
+    public static void resetPassword(View view, String email) {
+        FirebaseAuth fAuth = FirebaseAuth.getInstance();
+
+        fAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Snackbar.make(view, "Email Sent, Check your Inbox to Reset Password",
+                                Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+                        builder.setTitle("User not Found")
+                                .setMessage(Objects.requireNonNull(task.getException()).getMessage())
+                                .setNegativeButton("OK", ((dialogInterface, i) -> {
+                                }))
+                                .create().show();
+                    }
+                });
+    }
+
+    // Sign Out User and Clear all User Profile Data
     public static void signOut(Context context) {
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
         fAuth.signOut();

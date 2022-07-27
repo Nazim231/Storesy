@@ -1,5 +1,13 @@
 package com.naztec.storesy;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,16 +16,13 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import android.annotation.SuppressLint;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
-
 import com.google.android.material.navigation.NavigationView;
 import com.naztec.storesy.Custom.UserAuthentications;
-import com.naztec.storesy.Fragments.*;
+import com.naztec.storesy.Fragments.AccountFragment;
+import com.naztec.storesy.Fragments.CartFragment;
+import com.naztec.storesy.Fragments.HomeFragment;
+import com.naztec.storesy.Fragments.OrdersFragment;
+import com.naztec.storesy.Fragments.WishlistFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -41,13 +46,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navView.setNavigationItemSelectedListener(this);
+        navView.setCheckedItem(R.id.nav_home);
+        loadFragment(new HomeFragment());
 
         // Setting Data to the Navigation Header View
-        View view = navView.getHeaderView(0);
-        TextView personName = view.findViewById(R.id.header_user_name);
-        personName.setText(UserAuthentications.userData.getFirstName());
-        TextView personEmail = view.findViewById(R.id.header_user_email);
-        personEmail.setText(UserAuthentications.userData.getEmail());
+        new Handler().postDelayed(() -> {
+            View view = navView.getHeaderView(0);
+            TextView personName = view.findViewById(R.id.header_user_name);
+            personName.setText(UserAuthentications.userData.getFirstName());
+            TextView personEmail = view.findViewById(R.id.header_user_email);
+            personEmail.setText(UserAuthentications.userData.getEmail());
+        }, 1000);
 
     }
 

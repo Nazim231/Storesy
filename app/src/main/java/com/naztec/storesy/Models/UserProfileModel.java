@@ -25,11 +25,10 @@ public class UserProfileModel {
         // Required Empty Constructor
     }
 
-    public UserProfileModel(String UID, String email, boolean isAuthenticated, boolean isVerified) {
+    public UserProfileModel(String UID, String email, boolean isAuthenticated) {
         this.UID = UID;
         this.email = email;
         this.isAuthenticated = isAuthenticated;
-        this.isVerified = isVerified;
     }
 
     public UserProfileModel(String UID, boolean isAuthenticated) {
@@ -67,6 +66,10 @@ public class UserProfileModel {
 
     public boolean isVerified() {
         return isVerified;
+    }
+
+    public void setVerified(boolean isVerified) {
+        this.isVerified = isVerified;
     }
 
 }

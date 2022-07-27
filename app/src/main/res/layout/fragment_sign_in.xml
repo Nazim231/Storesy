@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:background="@color/off_white"
+    android:padding="16dp"
     tools:context=".Fragments.SignInFragment">
 
     <ImageButton
@@ -44,9 +44,9 @@
             android:id="@+id/text_layout_1"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:boxStrokeColor="@color/light_black"
-            app:hintTextColor="@color/light_black"
-            android:layout_height="wrap_content">
+            app:hintTextColor="@color/light_black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/sign_in_email"
@@ -64,11 +64,11 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/text_layout_2"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:hintTextColor="@color/light_black"
-            app:boxStrokeColor="@color/light_black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="16dp"
+            app:boxStrokeColor="@color/light_black"
+            app:hintTextColor="@color/light_black">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/sign_in_pwd"
@@ -82,16 +82,15 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/sign_in_txt_btn_forgot_password"
+        <Button
+            android:id="@+id/sign_in_btn_forgot_password"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:clickable="true"
-            android:focusable="true"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
-            android:gravity="center"
             android:padding="8dp"
             android:text="Forgot Password?"
+            android:textAllCaps="false"
             android:textColor="@color/purple_700"
             tools:ignore="HardcodedText" />
 
@@ -125,16 +124,15 @@
             android:text="Don't have an account? "
             tools:ignore="HardcodedText" />
 
-        <TextView
-            android:id="@+id/txt_btn_sign_up_frag"
+        <Button
+            android:id="@+id/btn_goto_sign_up_frag"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
-            android:padding="8dp"
+            android:gravity="center"
             android:text="@string/sign_up"
+            android:textAllCaps="false"
             android:textColor="@color/purple_700" />
 
 

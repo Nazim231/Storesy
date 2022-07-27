@@ -46,7 +46,7 @@ public class SignUpFragment extends Fragment {
         txtConfPwd = view.findViewById(R.id.sign_up_conf_pwd);
         btnSignUp = view.findViewById(R.id.btn_sign_up);
 
-        switchToSignIn = view.findViewById(R.id.txt_btn_sign_in_frag);
+        switchToSignIn = view.findViewById(R.id.btn_goto_sign_in_frag);
 
         btnSignInAsGuest.setOnClickListener(v ->
                 UserAuthentications.signInAsGuest(view.getContext())
@@ -74,7 +74,7 @@ public class SignUpFragment extends Fragment {
             else if (!pwd.equals(confPwd))
                 txtConfPwd.setError("Password doesn't match");
             else
-                UserAuthentications.signUp(v.getContext(), firstName, lastName, email, pwd);
+                UserAuthentications.signUp(v, firstName, lastName, email, pwd);
 
         });
 
