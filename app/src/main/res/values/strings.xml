@@ -16,4 +16,5 @@
     <string name="verify_your_email">Verify your email</string>
     <string name="desc_verify_email">Click on the Button below to get the Verification link on your given email</string>
     <string name="desc_email_verification">Please click on the link sent on your email and come again to verify your account</string>
+    <string name="desc_reset_pwd_mail_sent">Email Sent Successfully, please use the link provided in email to reset your password.</string>
 </resources>

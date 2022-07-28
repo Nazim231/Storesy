@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
 
@@ -15,12 +16,13 @@ import com.naztec.storesy.R;
 
 import java.util.Objects;
 
-public class ForgotPasswordFragment extends Fragment {
+public class ResetPasswordFragment extends Fragment {
 
     TextInputEditText txtEmail;
+    LinearLayout layoutMailSent;
     Button btnRecoverPassword, btnGoToSignInFrag;
 
-    public ForgotPasswordFragment() {
+    public ResetPasswordFragment() {
         // Required empty public constructor
     }
 
@@ -28,9 +30,10 @@ public class ForgotPasswordFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_forgot_password, container, false);
+        View view = inflater.inflate(R.layout.fragment_reset_password, container, false);
 
         txtEmail = view.findViewById(R.id.forgot_pwd_email);
+        layoutMailSent = view.findViewById(R.id.layout_reset_pwd_mail_sent);
         btnRecoverPassword = view.findViewById(R.id.btn_recover_pwd);
         btnRecoverPassword.setOnClickListener(v -> {
             String email = Objects.requireNonNull(txtEmail.getText()).toString();
@@ -40,7 +43,15 @@ public class ForgotPasswordFragment extends Fragment {
             else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches())
                 txtEmail.setError("Enter Valid Email");
             else {
-                UserAuthentications.resetPassword(v, email);
+                btnRecoverPassword.setEnabled(false);
+                UserAuthentications.resetPassword(v, email, mailSent -> {
+                    if (mailSent) {
+                        btnRecoverPassword.setVisibility(View.GONE);
+                        layoutMailSent.setVisibility(View.VISIBLE);
+                    } else {
+                        btnRecoverPassword.setEnabled(true);
+                    }
+                });
             }
         });
 

@@ -50,33 +50,36 @@ public class UserAuthentications {
                 if (!currentUser.isAnonymous()) {
                     // User is Signed In with Email
                     if (currentUser.isEmailVerified()) {
-                        fetchUserProfileData(context);
-                        context.startActivity(new Intent(context, MainActivity.class));
+                        fetchUserProfileData(context, true);
                     } else {
                         userData = new UserProfileModel(currentUser.getUid(), currentUser.getEmail(), true);
                         context.startActivity(new Intent(context, EmailVerificationActivity.class));
+                        ((Activity) context).finish();
                     }
                 } else {
                     // User is Guest
                     userData = new UserProfileModel(currentUser.getUid(), true);
                     context.startActivity(new Intent(context, MainActivity.class));
+                    ((Activity) context).finish();
                 }
             } else {
                 // No Account Signed In
                 clearUserInfo();
                 context.startActivity(new Intent(context, UserRegistrationActivity.class));
+                ((Activity) context).finish();
             }
 
-            ((Activity) context).finish();
         }, 2000);
     }
 
     /**
      * Fetch Full User Profile
      *
-     * @implNote Invoked from performAuth()
+     * @param context  to make the use of Context whenever needed
+     * @param goToMain if True then redirect to MainActivity
+     * @implNote Invoked from performAuth(), signIn()
      */
-    public static void fetchUserProfileData(Context context) {
+    public static void fetchUserProfileData(Context context, boolean goToMain) {
         // TODO : Fetch User Details like UID, Email Address, Delivery Addresses, Orders, Ratings, Wishlist, Cart, etc.
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -88,6 +91,10 @@ public class UserAuthentications {
                 .addOnSuccessListener(documentSnapshot -> {
                     userData.setFirstName(documentSnapshot.getString("firstName"));
                     userData.setLastName(documentSnapshot.getString("lastName"));
+                    if (goToMain) {
+                        context.startActivity(new Intent(context, MainActivity.class));
+                        ((Activity) context).finish();
+                    }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("PROFILE_DATA_FAILURE:", e.getMessage());
@@ -229,22 +236,23 @@ public class UserAuthentications {
     }
 
     /**
-     * Interface to see if the Profile Data is Uploaded to Database or not
+     * Interface to see if the Given Task if successfully completed or not
+     * using interface because FirebaseQuery can't return any value
      *
-     * @implSpec used in addProfileDataToDB()
+     * @implSpec used in addProfileDataToDB(), resetPassword()
      */
-    public interface DataUploaded {
-        void isDataUploaded(boolean dataUploaded);
+    public interface TaskResult {
+        void isTaskSuccessful(boolean taskResult);
     }
 
     /**
      * To Upload the User Profile Data to Database after Email Verification
      *
-     * @param context      to make the use of Context whenever needed
-     * @param dataUploaded interface to check either data is uploaded or not
+     * @param context    to make the use of Context whenever needed
+     * @param taskResult interface to check either data is uploaded or not
      * @implSpec Invoked from EmailVerificationActivity via onResume() after Email Verified
      */
-    public static void addProfileDataToDB(Context context, DataUploaded dataUploaded) {
+    public static void addProfileDataToDB(Context context, TaskResult taskResult) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Data Map
@@ -258,12 +266,12 @@ public class UserAuthentications {
         db.collection("USERS").document(userData.getUID()).set(data, SetOptions.merge())
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        dataUploaded.isDataUploaded(true);
+                        taskResult.isTaskSuccessful(true);
                     } else {
                         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
                         builder.setTitle("Profile Creation Failed");
                         builder.setMessage(Objects.requireNonNull(task.getException()).getMessage());
-                        builder.setPositiveButton("Retry", ((dialogInterface, i) -> addProfileDataToDB(context, dataUploaded)));
+                        builder.setPositiveButton("Retry", ((dialogInterface, i) -> addProfileDataToDB(context, taskResult)));
                         builder.setNegativeButton("Cancel", ((dialogInterface, i) -> {
                             context.startActivity(new Intent(context, MainActivity.class));
                             ((Activity) context).finish();
@@ -303,13 +311,12 @@ public class UserAuthentications {
                         pd.dismiss();
                         // Checking if User Email is Verified or Not
                         if (fAuth.getCurrentUser().isEmailVerified()) {
-                            fetchUserProfileData(context);
-                            context.startActivity(new Intent(context, MainActivity.class));
+                            fetchUserProfileData(context, true);
                         } else {
                             // If User Email isn't Verified he must verify email before continuing
                             context.startActivity(new Intent(context, EmailVerificationActivity.class));
+                            ((Activity) context).finish();
                         }
-                        ((Activity) context).finish();
                     } else {
                         pd.dismiss();
                         String error = Objects.requireNonNull(task.getException()).getMessage();
@@ -333,9 +340,9 @@ public class UserAuthentications {
      *
      * @param view  to make the use of View whenever needed
      * @param email User Email whose password needs to be changed
-     * @implSpec Invoked from ForgotPasswordFragment on btnRecoverPassword
+     * @implSpec Invoked from ResetPasswordFragment on btnRecoverPassword
      */
-    public static void resetPassword(View view, String email) {
+    public static void resetPassword(View view, String email, TaskResult mailSent) {
         FirebaseAuth fAuth = FirebaseAuth.getInstance();
 
         fAuth.sendPasswordResetEmail(email)
@@ -343,13 +350,15 @@ public class UserAuthentications {
                     if (task.isSuccessful()) {
                         Snackbar.make(view, "Email Sent, Check your Inbox to Reset Password",
                                 Snackbar.LENGTH_SHORT).show();
+                        mailSent.isTaskSuccessful(true);
                     } else {
                         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-                        builder.setTitle("User not Found")
+                        builder.setTitle(":(")
                                 .setMessage(Objects.requireNonNull(task.getException()).getMessage())
                                 .setNegativeButton("OK", ((dialogInterface, i) -> {
                                 }))
                                 .create().show();
+                        mailSent.isTaskSuccessful(false);
                     }
                 });
     }

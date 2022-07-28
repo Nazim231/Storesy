@@ -2,7 +2,6 @@ package com.naztec.storesy;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -50,13 +49,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         loadFragment(new HomeFragment());
 
         // Setting Data to the Navigation Header View
-        new Handler().postDelayed(() -> {
-            View view = navView.getHeaderView(0);
-            TextView personName = view.findViewById(R.id.header_user_name);
-            personName.setText(UserAuthentications.userData.getFirstName());
-            TextView personEmail = view.findViewById(R.id.header_user_email);
-            personEmail.setText(UserAuthentications.userData.getEmail());
-        }, 1000);
+        View view = navView.getHeaderView(0);
+        TextView personName = view.findViewById(R.id.header_user_name);
+        personName.setText(UserAuthentications.userData.getFirstName());
+        TextView personEmail = view.findViewById(R.id.header_user_email);
+        personEmail.setText(UserAuthentications.userData.getEmail());
 
     }
 
