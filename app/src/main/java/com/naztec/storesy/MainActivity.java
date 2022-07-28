@@ -16,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationView;
+import com.naztec.storesy.Custom.DBQueries;
 import com.naztec.storesy.Custom.UserAuthentications;
 import com.naztec.storesy.Fragments.AccountFragment;
 import com.naztec.storesy.Fragments.CartFragment;

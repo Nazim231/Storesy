@@ -236,7 +236,7 @@ public class UserAuthentications {
     }
 
     /**
-     * Interface to see if the Given Task if successfully completed or not
+     * Interface to see if the Given Task is successfully completed or not
      * using interface because FirebaseQuery can't return any value
      *
      * @implSpec used in addProfileDataToDB(), resetPassword()
@@ -340,6 +340,7 @@ public class UserAuthentications {
      *
      * @param view  to make the use of View whenever needed
      * @param email User Email whose password needs to be changed
+     * @param mailSent Interface to return True when mail is sent else False
      * @implSpec Invoked from ResetPasswordFragment on btnRecoverPassword
      */
     public static void resetPassword(View view, String email, TaskResult mailSent) {
