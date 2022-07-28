@@ -63,7 +63,7 @@ public class SignInFragment extends Fragment {
 
         btnForgotPassword.setOnClickListener(v ->
                 getParentFragmentManager().beginTransaction().replace(R.id.registration_frame_layout,
-                                new ForgotPasswordFragment())
+                                new ResetPasswordFragment())
                         .commit()
         );
 
