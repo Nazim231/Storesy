@@ -34,8 +34,10 @@ public class DBQueries {
 
     /**
      * To Get the Categories from Database
-     * @param context       to make the use of Context whenever needed
-     * @param taskResult    Interface to return True whenever a category is fetched from DB
+     *
+     * @param context    to make the use of Context whenever needed
+     * @param taskResult Interface to return True whenever a category is fetched from DB
+     * @implSpec Invoked from HomeFragment onCreateView
      */
     public static void fetchCategories(Context context, TaskResult taskResult) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -51,7 +53,7 @@ public class DBQueries {
                         }
                     } else {
                         Toast.makeText(context, "Categories Error : " +
-                                Objects.requireNonNull(task.getException()).getMessage(),
+                                        Objects.requireNonNull(task.getException()).getMessage(),
                                 Toast.LENGTH_SHORT).show();
                     }
                 });

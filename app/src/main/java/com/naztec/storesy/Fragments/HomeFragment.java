@@ -11,12 +11,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.naztec.storesy.Adapters.CategoryAdapter;
+import com.naztec.storesy.Adapters.MultiLayoutAdapter;
 import com.naztec.storesy.Custom.DBQueries;
+import com.naztec.storesy.Models.MultiLayoutModel;
 import com.naztec.storesy.R;
+
+import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
 
-    RecyclerView rvCategories;
+    RecyclerView rvCategories, rvMultiLayout;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -30,6 +34,9 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         rvCategories = view.findViewById(R.id.rv_categories);
+        rvMultiLayout = view.findViewById(R.id.rv_multi_layout);
+
+        // Categories
         rvCategories.setLayoutManager(new LinearLayoutManager(view.getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
         CategoryAdapter adapter = new CategoryAdapter(DBQueries.categories);
@@ -41,6 +48,22 @@ public class HomeFragment extends Fragment {
             );
         else
             adapter.notifyDataSetChanged();
+
+        // Home Data (Multi Layout)
+
+        // Testing Data
+        ArrayList<MultiLayoutModel> layoutsList = new ArrayList<>();
+        layoutsList.add(new MultiLayoutModel(0, "Banner 1"));
+        layoutsList.add(new MultiLayoutModel(1, "Daily Deals"));
+        layoutsList.add(new MultiLayoutModel(1, "Trending"));
+        layoutsList.add(new MultiLayoutModel(0, "Banner 2"));
+        layoutsList.add(new MultiLayoutModel(1, "Men's Wear"));
+
+
+        rvMultiLayout.setLayoutManager(new LinearLayoutManager(view.getContext(),
+                LinearLayoutManager.VERTICAL, false));
+        MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter(layoutsList);
+        rvMultiLayout.setAdapter(multiLayoutAdapter);
 
         return view;
     }

@@ -18,4 +18,6 @@
     <string name="desc_email_verification">Please click on the link sent on your email and come again to verify your account</string>
     <string name="desc_reset_pwd_mail_sent">Email Sent Successfully, please use the link provided in email to reset your password.</string>
     <string name="category">Category</string>
+    <string name="title">Title</string>
+    <string name="see_all">See All</string>
 </resources>
