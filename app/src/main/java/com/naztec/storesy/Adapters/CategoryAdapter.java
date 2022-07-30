@@ -16,9 +16,17 @@ import java.util.ArrayList;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
     ArrayList<CategoryModel> categories;
+    // TODO : Remove below variables they are used just for testing
+    ArrayList<String> products;
+    boolean containCategories = false;
 
-    public CategoryAdapter(ArrayList<CategoryModel> categories) {
+    public CategoryAdapter(boolean containCategories, ArrayList<CategoryModel> categories) {
         this.categories = categories;
+        this.containCategories = containCategories;
+    }
+
+    public CategoryAdapter(ArrayList<String> products) {
+        this.products = products;
     }
 
     @NonNull
@@ -42,12 +50,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.categoryName.setText(categories.get(position).getCategoryName());
+
+        holder.categoryName.setText(containCategories ? categories.get(position).getCategoryName() : products.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return categories.size();
+        return containCategories ? categories.size() : products.size();
     }
 
 }

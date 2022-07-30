@@ -39,7 +39,7 @@ public class HomeFragment extends Fragment {
         // Categories
         rvCategories.setLayoutManager(new LinearLayoutManager(view.getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        CategoryAdapter adapter = new CategoryAdapter(DBQueries.categories);
+        CategoryAdapter adapter = new CategoryAdapter(true, DBQueries.categories);  // TODO : boolean value just for testing remove this
         rvCategories.setAdapter(adapter);
 
         if (DBQueries.categories.size() == 0)
@@ -50,20 +50,25 @@ public class HomeFragment extends Fragment {
             adapter.notifyDataSetChanged();
 
         // Home Data (Multi Layout)
-
-        // Testing Data
-        ArrayList<MultiLayoutModel> layoutsList = new ArrayList<>();
-        layoutsList.add(new MultiLayoutModel(0, "Banner 1"));
-        layoutsList.add(new MultiLayoutModel(1, "Daily Deals"));
-        layoutsList.add(new MultiLayoutModel(1, "Trending"));
-        layoutsList.add(new MultiLayoutModel(0, "Banner 2"));
-        layoutsList.add(new MultiLayoutModel(1, "Men's Wear"));
-
-
         rvMultiLayout.setLayoutManager(new LinearLayoutManager(view.getContext(),
                 LinearLayoutManager.VERTICAL, false));
-        MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter(layoutsList);
-        rvMultiLayout.setAdapter(multiLayoutAdapter);
+        if (DBQueries.loadedCategories.contains("Home")) {
+            int index = DBQueries.loadedCategories.indexOf("Home");
+            ArrayList<MultiLayoutModel> model = DBQueries.sectionsData.get(index);
+            MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter(model);
+            rvMultiLayout.setAdapter(multiLayoutAdapter);
+            multiLayoutAdapter.notifyDataSetChanged();
+        } else {
+            DBQueries.loadedCategories.add("Home");
+            int categoryIndex = DBQueries.loadedCategories.indexOf("Home");
+            DBQueries.sectionsData.add(categoryIndex, new ArrayList<>());
+            MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter(
+                    DBQueries.sectionsData.get(categoryIndex));
+            rvMultiLayout.setAdapter(multiLayoutAdapter);
+            DBQueries.fetchSectionData(view.getContext(), categoryIndex, "Home",
+                    taskResult -> multiLayoutAdapter.notifyDataSetChanged());
+
+        }
 
         return view;
     }

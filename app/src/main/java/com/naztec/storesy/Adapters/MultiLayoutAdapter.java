@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.naztec.storesy.Models.MultiLayoutModel;
@@ -67,7 +68,7 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter {
                 ((BannerViewHolder) holder).setData();
                 break;
             case HORIZONTAL_PRODS_LAYOUT:
-                ((HorizontalViewHolder) holder).setData(data.getLayoutTitle());
+                ((HorizontalViewHolder) holder).setData(data.getLayoutTitle(), data.getProductIds());
                 break;
         }
 
@@ -88,14 +89,22 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter {
     protected static class HorizontalViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
+        RecyclerView rvHorizontalProducts;
 
         public HorizontalViewHolder(@NonNull View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.hor_prod_list_title);
+            rvHorizontalProducts = itemView.findViewById(R.id.rv_horizontal_prod);
+            rvHorizontalProducts.setLayoutManager(new LinearLayoutManager(itemView.getContext(),
+                    LinearLayoutManager.HORIZONTAL, false));
+
         }
 
-        private void setData(String txtTitle) {
+        private void setData(String txtTitle, ArrayList<String> products) {
             title.setText(txtTitle);
+            CategoryAdapter adapter = new CategoryAdapter(products);
+            rvHorizontalProducts.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
 
     }
