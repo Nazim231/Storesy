@@ -1,13 +1,17 @@
 package com.naztec.storesy.Models;
 
+import java.util.ArrayList;
+
 public class MultiLayoutModel {
 
-    String layoutTitle;
     int layoutID;
+    String layoutTitle;
+    ArrayList<String> productIds;
 
-    public MultiLayoutModel(int layoutID, String layoutTitle) {
+    public MultiLayoutModel(int layoutID, String layoutTitle, ArrayList<String> productIds) {
         this.layoutID = layoutID;
         this.layoutTitle = layoutTitle;
+        this.productIds = productIds;
     }
 
     public int getLayoutID() {
@@ -16,6 +20,10 @@ public class MultiLayoutModel {
 
     public String getLayoutTitle() {
         return layoutTitle;
+    }
+
+    public ArrayList<String> getProductIds() {
+        return productIds;
     }
 
 }
