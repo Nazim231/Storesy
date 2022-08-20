@@ -47,7 +47,7 @@ public class ResetPasswordFragment extends Fragment {
                 UserAuthentications.resetPassword(v, email, mailSent -> {
                     if (mailSent) {
                         btnRecoverPassword.setVisibility(View.GONE);
-                        layoutMailSent.setVisibility(View.VISIBLE);
+                        //layoutMailSent.setVisibility(View.VISIBLE);
                     } else {
                         btnRecoverPassword.setEnabled(true);
                     }
