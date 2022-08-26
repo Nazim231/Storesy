@@ -1,5 +1,6 @@
 package com.naztec.storesy.Adapters;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.naztec.storesy.CategorizedActivity;
 import com.naztec.storesy.Models.CategoryModel;
 import com.naztec.storesy.R;
 
@@ -38,6 +40,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
             categoryName = itemView.findViewById(R.id.txt_category_name);
 
+            itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(itemView.getContext(), CategorizedActivity.class);
+                intent.putExtra("categoryName", categoryName.getText().toString());
+                itemView.getContext().startActivity(intent);
+            });
         }
     }
 

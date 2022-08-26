@@ -29,7 +29,7 @@ public class DBQueries {
     /**
      * To Store those Category Names whose Data/Layouts/Sections has been fetched
      *
-     * @implNote Values Inserted from HomeFragment
+     * @implNote Values Inserted from HomeFragment, CategorizedActivity
      */
     public static ArrayList<String> loadedCategories = new ArrayList<>();
     public static ArrayList<ArrayList<MultiLayoutModel>> sectionsData = new ArrayList<>();
@@ -38,7 +38,7 @@ public class DBQueries {
      * Interface to see if the given task is completed successfully or not
      * using interface because FirebaseQuery can't return any value
      *
-     * @implSpec used in fetchCategories()
+     * @implSpec used in fetchCategories(), fetchSectionData()
      */
     public interface TaskResult {
         void isTaskCompleted(boolean taskResult);
@@ -49,7 +49,7 @@ public class DBQueries {
      *
      * @param context    to make the use of Context whenever needed
      * @param taskResult Interface to return True whenever a category is fetched from DB
-     * @implSpec Invoked from HomeFragment onCreateView
+     * @implNote Invoked from HomeFragment onCreateView
      */
     public static void fetchCategories(Context context, TaskResult taskResult) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -60,8 +60,10 @@ public class DBQueries {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             CategoryModel categoryData = new CategoryModel(document.getId(),
                                     document.getString("url"));
-                            categories.add(categoryData);
-                            // TODO : fetch the sections of Category
+                            /* HomeFragment automatically show the Home Category Data so we don't
+                             * need to add Home to the Category Layout */
+                            if (!document.getId().equals("Home"))
+                                categories.add(categoryData);
                             taskResult.isTaskCompleted(true);
                         }
                     } else {
@@ -76,11 +78,11 @@ public class DBQueries {
 
     /**
      * To Get the Specific Category Related Data
-     * @param context to make the Use of Context whenever needed
-     * @param categoryIndex to store the fetched data at this index value in sectionData ArrayList
-     * @param categoryName to get the data inside this specific category
-     * @param taskResult Interface to return True whenever a product is fetched from the specified category
      *
+     * @param context       to make the Use of Context whenever needed
+     * @param categoryIndex to store the fetched data at this index value in sectionData ArrayList
+     * @param categoryName  to get the data inside this specific category
+     * @param taskResult    Interface to return True whenever a product is fetched from the specified category
      * @implNote Invoked from HomeFragment
      */
     public static void fetchSectionData(Context context, int categoryIndex, String categoryName, TaskResult taskResult) {
