@@ -1,6 +1,7 @@
 package com.naztec.storesy.Custom;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -67,11 +68,21 @@ public class DBQueries {
                         Toast.makeText(context, "Categories Error : " +
                                         Objects.requireNonNull(task.getException()).getMessage(),
                                 Toast.LENGTH_SHORT).show();
+                        Log.v("CategoriesError: ", Objects.requireNonNull(task.getException()).getMessage());
                     }
                 });
 
     }
 
+    /**
+     * To Get the Specific Category Related Data
+     * @param context to make the Use of Context whenever needed
+     * @param categoryIndex to store the fetched data at this index value in sectionData ArrayList
+     * @param categoryName to get the data inside this specific category
+     * @param taskResult Interface to return True whenever a product is fetched from the specified category
+     *
+     * @implNote Invoked from HomeFragment
+     */
     public static void fetchSectionData(Context context, int categoryIndex, String categoryName, TaskResult taskResult) {
         CollectionReference db = FirebaseFirestore.getInstance().collection("CATEGORIES")
                 .document(categoryName).collection("SECTIONS");
@@ -99,6 +110,13 @@ public class DBQueries {
                                 }
                             });
                 }
+            } else {
+                Log.v("SECTION_DATA_FAILURE", "categoryIndex: " + categoryIndex +
+                        "categoryName: " + categoryName +
+                        "Error: " + Objects.requireNonNull(task.getException()).getMessage());
+                Toast.makeText(context, "Error : SECTION_DATA_FAILURE", Toast.LENGTH_SHORT)
+                        .show();
+
             }
         });
     }

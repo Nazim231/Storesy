@@ -8,48 +8,46 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.naztec.storesy.Models.CategoryModel;
 import com.naztec.storesy.R;
 
 import java.util.ArrayList;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
+public class HorizontalProductsAdapter extends RecyclerView.Adapter<HorizontalProductsAdapter.ViewHolder> {
 
-    ArrayList<CategoryModel> categories;
+    // TODO : Change the type of ArrayList to the CustomModel of ProductImageURL(String) and ProductName(String)
+    ArrayList<String> products;
 
-    public CategoryAdapter(ArrayList<CategoryModel> categories) {
-        this.categories = categories;
+    public HorizontalProductsAdapter(ArrayList<String> products) {
+        this.products = products;
     }
-
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_category_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hor_prod_item, parent, false);
         return new ViewHolder(view);
     }
 
     protected static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView categoryName;
+        TextView prodName;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            categoryName = itemView.findViewById(R.id.txt_category_name);
+            prodName = itemView.findViewById(R.id.hor_prod_item_name);
 
         }
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        holder.categoryName.setText(categories.get(position).getCategoryName());
+        holder.prodName.setText(products.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return categories.size();
+        return products.size();
     }
-
 }

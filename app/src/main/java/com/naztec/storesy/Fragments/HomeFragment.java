@@ -39,7 +39,7 @@ public class HomeFragment extends Fragment {
         // Categories
         rvCategories.setLayoutManager(new LinearLayoutManager(view.getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-        CategoryAdapter adapter = new CategoryAdapter(true, DBQueries.categories);  // TODO : boolean value just for testing remove this
+        CategoryAdapter adapter = new CategoryAdapter(DBQueries.categories);
         rvCategories.setAdapter(adapter);
 
         if (DBQueries.categories.size() == 0)

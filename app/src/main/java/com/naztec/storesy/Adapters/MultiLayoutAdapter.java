@@ -1,5 +1,6 @@
 package com.naztec.storesy.Adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.naztec.storesy.R;
 import java.util.ArrayList;
 
 
+@SuppressWarnings("rawtypes")
 public class MultiLayoutAdapter extends RecyclerView.Adapter {
 
     ArrayList<MultiLayoutModel> layoutList;
@@ -53,6 +55,7 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter {
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_horizontal_prod_list, parent, false);
                 return new HorizontalViewHolder(view);
             default:
+                //noinspection ConstantConditions
                 return null;
         }
 
@@ -100,9 +103,10 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter {
 
         }
 
+        @SuppressLint("NotifyDataSetChanged")
         private void setData(String txtTitle, ArrayList<String> products) {
             title.setText(txtTitle);
-            CategoryAdapter adapter = new CategoryAdapter(products);
+            HorizontalProductsAdapter adapter = new HorizontalProductsAdapter(products);
             rvHorizontalProducts.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }

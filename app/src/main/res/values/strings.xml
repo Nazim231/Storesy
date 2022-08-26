@@ -13,6 +13,7 @@
     <!-- Navigation Strings -->
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
+
     <string name="verify_your_email">Verify your email</string>
     <string name="desc_verify_email">Click on the Button below to get the Verification link on your given email</string>
     <string name="desc_email_verification">Please click on the link sent on your email and come again to verify your account</string>
@@ -20,4 +21,5 @@
     <string name="category">Category</string>
     <string name="title">Title</string>
     <string name="see_all">See All</string>
+    <string name="prod_name">Product Name</string>
 </resources>
