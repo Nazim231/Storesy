@@ -4,24 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CategorizedActivity">
+    android:background="@color/off_white"
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    tools:context=".ViewSectionActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/categorized_toolbar"
+        android:id="@+id/view_section_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/off_white"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_categorized_multi_layout"
+        android:id="@+id/rv_view_section"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:paddingTop="8dp"
         android:clipChildren="false"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/categorized_toolbar" />
-
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/view_section_toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

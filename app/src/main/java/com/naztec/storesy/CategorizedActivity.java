@@ -39,14 +39,14 @@ public class CategorizedActivity extends AppCompatActivity {
         // Category Data (Multi Layout)
         if (DBQueries.loadedCategories.contains(categoryName)) {
             int index = DBQueries.loadedCategories.indexOf(categoryName);
-            MultiLayoutAdapter adapter = new MultiLayoutAdapter(DBQueries.sectionsData.get(index));
+            MultiLayoutAdapter adapter = new MultiLayoutAdapter(categoryName, DBQueries.sectionsData.get(index));
             rvMultiLayout.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         } else {
             DBQueries.loadedCategories.add(categoryName);
             int index = DBQueries.loadedCategories.indexOf(categoryName);
             DBQueries.sectionsData.add(index, new ArrayList<>());
-            MultiLayoutAdapter adapter = new MultiLayoutAdapter(DBQueries.sectionsData.get(index));
+            MultiLayoutAdapter adapter = new MultiLayoutAdapter(categoryName, DBQueries.sectionsData.get(index));
             rvMultiLayout.setAdapter(adapter);
             DBQueries.fetchSectionData(this, index, categoryName, taskResult ->
                     adapter.notifyDataSetChanged()

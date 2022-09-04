@@ -1,9 +1,11 @@
 package com.naztec.storesy.Adapters;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.naztec.storesy.Models.MultiLayoutModel;
 import com.naztec.storesy.R;
+import com.naztec.storesy.ViewSectionActivity;
 
 import java.util.ArrayList;
 
@@ -20,11 +23,13 @@ import java.util.ArrayList;
 public class MultiLayoutAdapter extends RecyclerView.Adapter {
 
     ArrayList<MultiLayoutModel> layoutList;
+    String categoryName;
 
     protected final int BANNERS_LAYOUT = 0;
     protected final int HORIZONTAL_PRODS_LAYOUT = 1;
 
-    public MultiLayoutAdapter(ArrayList<MultiLayoutModel> layoutsList) {
+    public MultiLayoutAdapter(String categoryName, ArrayList<MultiLayoutModel> layoutsList) {
+        this.categoryName = categoryName;
         this.layoutList = layoutsList;
     }
 
@@ -71,7 +76,7 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter {
                 ((BannerViewHolder) holder).setData();
                 break;
             case HORIZONTAL_PRODS_LAYOUT:
-                ((HorizontalViewHolder) holder).setData(data.getLayoutTitle(), data.getProductIds());
+                ((HorizontalViewHolder) holder).setData(categoryName, position, data.getLayoutTitle(), data.getProductIds());
                 break;
         }
 
@@ -92,7 +97,10 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter {
     protected static class HorizontalViewHolder extends RecyclerView.ViewHolder {
 
         TextView title;
+        Button btnSeeAll;
         RecyclerView rvHorizontalProducts;
+        String categoryName;
+        int sectionIndex;
 
         public HorizontalViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -101,14 +109,26 @@ public class MultiLayoutAdapter extends RecyclerView.Adapter {
             rvHorizontalProducts.setLayoutManager(new LinearLayoutManager(itemView.getContext(),
                     LinearLayoutManager.HORIZONTAL, false));
 
+            btnSeeAll = itemView.findViewById(R.id.btn_see_all);
+            btnSeeAll.setOnClickListener(v -> {
+                Intent intent = new Intent(itemView.getContext(), ViewSectionActivity.class);
+                intent.putExtra("sectionName", title.getText() == null ? "No Title" : title.getText());
+                intent.putExtra("categoryName", categoryName == null ? "No Category" : categoryName);
+                intent.putExtra("sectionIndex", sectionIndex);
+                itemView.getContext().startActivity(intent);
+            });
+
         }
 
         @SuppressLint("NotifyDataSetChanged")
-        private void setData(String txtTitle, ArrayList<String> products) {
+        private void setData(String category, int sectionIndex, String txtTitle, ArrayList<String> products) {
             title.setText(txtTitle);
             HorizontalProductsAdapter adapter = new HorizontalProductsAdapter(products);
             rvHorizontalProducts.setAdapter(adapter);
             adapter.notifyDataSetChanged();
+            categoryName = category;
+            this.sectionIndex = sectionIndex;
+
         }
 
     }

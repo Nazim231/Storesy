@@ -55,14 +55,14 @@ public class HomeFragment extends Fragment {
         if (DBQueries.loadedCategories.contains("Home")) {
             int index = DBQueries.loadedCategories.indexOf("Home");
             ArrayList<MultiLayoutModel> model = DBQueries.sectionsData.get(index);
-            MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter(model);
+            MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter("Home", model);
             rvMultiLayout.setAdapter(multiLayoutAdapter);
             multiLayoutAdapter.notifyDataSetChanged();
         } else {
             DBQueries.loadedCategories.add("Home");
             int categoryIndex = DBQueries.loadedCategories.indexOf("Home");
             DBQueries.sectionsData.add(categoryIndex, new ArrayList<>());
-            MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter(
+            MultiLayoutAdapter multiLayoutAdapter = new MultiLayoutAdapter("Home",
                     DBQueries.sectionsData.get(categoryIndex));
             rvMultiLayout.setAdapter(multiLayoutAdapter);
             DBQueries.fetchSectionData(view.getContext(), categoryIndex, "Home",

@@ -11,6 +11,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.Source;
 import com.naztec.storesy.Models.CategoryModel;
 import com.naztec.storesy.Models.MultiLayoutModel;
+import com.naztec.storesy.Models.ViewSectionItemsModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -83,7 +84,7 @@ public class DBQueries {
      * @param categoryIndex to store the fetched data at this index value in sectionData ArrayList
      * @param categoryName  to get the data inside this specific category
      * @param taskResult    Interface to return True whenever a product is fetched from the specified category
-     * @implNote Invoked from HomeFragment
+     * @implNote Invoked from HomeFragment, CategorizedActivity
      */
     public static void fetchSectionData(Context context, int categoryIndex, String categoryName, TaskResult taskResult) {
         CollectionReference db = FirebaseFirestore.getInstance().collection("CATEGORIES")
@@ -102,7 +103,7 @@ public class DBQueries {
                                 if (task2.isSuccessful()) {
                                     ArrayList<String> products = new ArrayList<>();
                                     for (QueryDocumentSnapshot product : task2.getResult()) {
-                                        String prodID = product.getId();
+                                        String prodID = product.getString("prodName");
                                         products.add(prodID);
                                         taskResult.isTaskCompleted(true);
                                     }
@@ -121,5 +122,38 @@ public class DBQueries {
 
             }
         });
+    }
+
+    public interface SectionItems {
+        void setSectionItems(ViewSectionItemsModel productDetails);
+    }
+
+    public static void fetchSectionItems(Context context, String categoryName, String sectionName, SectionItems sectionItems) {
+        FirebaseFirestore.getInstance().collection("CATEGORIES").document(categoryName)
+                .collection("SECTIONS").document(sectionName)
+                .collection("DATA").get(Source.SERVER)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot productIDs : task.getResult()) {
+                            String prodID = productIDs.getId();
+                            // fetching the product required details
+                            FirebaseFirestore.getInstance().collection("PRODUCTS")
+                                    .document(prodID).get(Source.SERVER)
+                                    .addOnSuccessListener(querySnapshot -> {
+                                        ViewSectionItemsModel prodDetails = querySnapshot
+                                                .toObject(ViewSectionItemsModel.class);
+                                        sectionItems.setSectionItems(prodDetails);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("FETCH_SEC_PROD", e.getMessage());
+                                        Toast.makeText(context, "Error: FETCH_SEC_PROD", Toast.LENGTH_SHORT).show();
+                                    });
+                        }
+                    } else {
+                        Log.e("FETCH_SECTION_ITEMS",
+                                Objects.requireNonNull(task.getException()).getMessage());
+                        Toast.makeText(context, "Error: FETCH_SECTION_ITEMS", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

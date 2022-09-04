@@ -22,4 +22,5 @@
     <string name="title">Title</string>
     <string name="see_all">See All</string>
     <string name="prod_name">Product Name</string>
+    <string name="prod_img">Product Image</string>
 </resources>
